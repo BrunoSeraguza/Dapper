@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\CarreiraBackEnd Balta\\Dap\\Dap.csproj": {}
+    "E:\\Balta.io\\DataAcess\\Dapper\\Dap\\Dap.csproj": {}
   },
   "projects": {
-    "E:\\CarreiraBackEnd Balta\\Dap\\Dap.csproj": {
+    "E:\\Balta.io\\DataAcess\\Dapper\\Dap\\Dap.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CarreiraBackEnd Balta\\Dap\\Dap.csproj",
+        "projectUniqueName": "E:\\Balta.io\\DataAcess\\Dapper\\Dap\\Dap.csproj",
         "projectName": "Dap",
-        "projectPath": "E:\\CarreiraBackEnd Balta\\Dap\\Dap.csproj",
+        "projectPath": "E:\\Balta.io\\DataAcess\\Dapper\\Dap\\Dap.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "E:\\CarreiraBackEnd Balta\\Dap\\obj\\",
+        "outputPath": "E:\\Balta.io\\DataAcess\\Dapper\\Dap\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
