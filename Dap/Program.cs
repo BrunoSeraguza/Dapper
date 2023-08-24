@@ -15,7 +15,8 @@ using (var connections = new SqlConnection(connectionString))
     //ExecuteReadProcedure(connections);
     //ExecuteScalar(connections);
     //ReadView(connections);
-    OneToOne(connections);
+    //OneToOne(connections);
+    OneToMany(connections);
 
 }
 
@@ -203,7 +204,7 @@ static void ReadView(SqlConnection sqlConnection)
     var courses = sqlConnection.Query(sql);
     foreach (var item in courses)
     {
-       Console.WriteLine($"{item.Id} {item.Title}");
+        Console.WriteLine($"{item.Id} {item.Title}");
     }
 
 }
@@ -214,15 +215,52 @@ static void OneToOne(SqlConnection sqlConnection)
     INNER JOIN [Course]
     ON [CareerItem].[CourseId] = [Course].[Id]";
 
-    var items = sqlConnection.Query<CareerItem,Course,CareerItem>(sql , (carrerItem,course) =>
+    var items = sqlConnection.Query<CareerItem, Course, CareerItem>(sql, (carrerItem, course) =>
     {
         carrerItem.Course = course;
-        return carrerItem; 
+        return carrerItem;
     }, splitOn: "Id"
     );
 
-    foreach(var item in items)
+    foreach (var item in items)
     {
         Console.WriteLine($"Titulo: {item.Title} - Curso {item.Course.Title}");
+    }
+}
+
+static void OneToMany(SqlConnection sqlConnection)
+{
+    var sql = @"SELECT 
+[Cr].[Id] ,
+[Cr].Title,
+[CItem].[CareerId],
+[CItem].[Title]
+FROM  [Career] as Cr
+INNER JOIN [CareerItem] as [CItem] ON [CItem].[CareerId] = [Cr].[Id]
+ORDER BY
+[Cr].[Title]";
+
+    var careers = new List<Career>();
+                                    //Objeto Pai,Objeto Filho, Resultado
+    var items = sqlConnection.Query<Career, CareerItem, Career>(sql, (career, item) =>
+    {
+        var car = careers.Where(c => c.Id == career.Id).FirstOrDefault();
+       if(car == null)
+       {
+        car = career;
+        career.Itens.Add(item);
+        careers.Add(car);
+       }
+        return career;
+    }, splitOn: "CareerId"
+    );
+
+    foreach (var career in items)
+    {
+        Console.WriteLine($"Titulo: {career.Title} ");
+        foreach (var item in  career.Itens)
+        {
+        Console.WriteLine($"Titulo: {item.Title} ");
+        }
     }
 }
