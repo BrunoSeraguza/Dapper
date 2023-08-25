@@ -16,7 +16,9 @@ using (var connections = new SqlConnection(connectionString))
     //ExecuteScalar(connections);
     //ReadView(connections);
     //OneToOne(connections);
-    OneToMany(connections);
+    //OneToMany(connections);
+   // QueryMultiple(connections);
+   GetAuthorCourse(connections);
 
 }
 
@@ -261,6 +263,47 @@ ORDER BY
         foreach (var item in  career.Itens)
         {
         Console.WriteLine($"Titulo: {item.Title} ");
+        }
+    }
+}
+
+static void QueryMultiple(SqlConnection sqlConnection)
+{
+    var query = @"SELECT * FROM COURSE; SELECT * FROM CATEGORY ";
+
+    using (var mult = sqlConnection.QueryMultiple(query))
+    {
+        var courses = mult.Read<Course>();
+        var category =  mult.Read<Category>();
+
+        foreach(var item in courses)
+        {
+            System.Console.WriteLine(item.Title);
+        }
+        foreach (var item in category)
+        {
+            System.Console.WriteLine(item.Title);
+        }
+
+    }
+}
+
+static void GetAuthorCourse(SqlConnection sqlConnection)
+{
+    string sql = @"SELECT * FROM [AUTHOR];SELECT * FROM [COURSE]";
+
+    using(var mult = sqlConnection.QueryMultiple(sql))
+    {
+        var authors = mult.Read<Author>();
+        var courses = mult.Read<Course>();
+
+        foreach (var item in authors)
+        {
+            System.Console.WriteLine(item.Title);
+        }
+        foreach(var item in courses)
+        {
+            System.Console.WriteLine(item.Title);
         }
     }
 }
