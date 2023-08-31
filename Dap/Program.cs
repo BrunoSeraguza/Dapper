@@ -2,6 +2,7 @@
 using Dapper;
 using Dap.Model;
 using Microsoft.Identity.Client;
+using System.Transactions;
 
 const string connectionString = "Data Source=DESKTOP-G18LE98;Initial Catalog=balta;Integrated Security=True;Encrypt=False;";
 
@@ -18,7 +19,11 @@ using (var connections = new SqlConnection(connectionString))
     //OneToOne(connections);
     //OneToMany(connections);
    // QueryMultiple(connections);
-   GetAuthorCourse(connections);
+   //GetAuthorCourse(connections);
+   //SelectIn(connections);
+    //Like(connections, "%Api%");
+    Transaction(connections);
+
 
 }
 
@@ -299,11 +304,92 @@ static void GetAuthorCourse(SqlConnection sqlConnection)
 
         foreach (var item in authors)
         {
-            System.Console.WriteLine(item.Title);
+            Console.WriteLine(item.Title);
         }
         foreach(var item in courses)
         {
-            System.Console.WriteLine(item.Title);
+            Console.WriteLine(item.Title);
         }
     }
+}
+
+static void SelectIn(SqlConnection sqlConnection)
+
+{
+   string sql = @"SELECT * FROM CAREER WHERE [ID] IN @ID";
+
+   var itens =  sqlConnection.Query<Career>(sql , new {
+        Id = new []
+        {
+            "01ae8a85-b4e8-4194-a0f1-1c6190af54cb",
+            "4327ac7e-963b-4893-9f31-9a3b28a4e72b"
+        }
+     });
+      
+      foreach (var item in itens)
+      {
+        Console.WriteLine(item.Title);
+        
+      }
+      
+}
+
+static void Like(SqlConnection sqlConnection, string like)
+{
+    string sql = @"SELECT * FROM [COURSE] WHERE [TITLE] LIKE @exp";
+
+    var itens = sqlConnection.Query<Course>(sql, new {
+        exp = $"{like}"
+    });
+
+    foreach (var item in itens)
+    {
+        Console.WriteLine(item.Title);
+    }
+}
+
+static void Transaction(SqlConnection sqlConnection)
+
+
+{
+    var insertSql = @"INSERT INTO 
+  [CATEGORY]
+   VALUES (
+    @Id,
+    @Title,
+    @Url,
+    @Summary,
+    @Order,
+    @Description,
+    @Featured
+    )";
+
+    Category category = new Category();
+    category.Id = Guid.NewGuid();
+    category.Title = "AmazonAws";
+    category.Url = "Amazon";
+    category.Description = "Categoria que nao quero inserir";
+    category.Order = 8;
+    category.summary = "AWS Cloud";
+    category.Featured = false;
+    sqlConnection.Open();
+   using (var transaction = sqlConnection.BeginTransaction())
+   {
+          var rows = sqlConnection.Execute(insertSql, new
+    {
+        category.Id,
+        category.Title,
+        category.Url,
+        category.summary,
+        category.Order,
+        category.Description,
+        category.Featured
+
+    }, transaction);
+     //transaction.Commit();
+     transaction.Rollback();
+
+     Console.WriteLine($"{rows} Linhas Inseridas");
+   }
+   sqlConnection.Close();
 }
